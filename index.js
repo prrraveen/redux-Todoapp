@@ -1,54 +1,37 @@
 // main.js
-import React from 'react';
-import ReactDOM from 'react-dom'; 
 import expect from 'expect';
-import { createStore} from 'redux';
+import deepFreeze from 'deep-freeze';
 
-const counter = (state=0, action) =>{
-  switch (action.type){
-    case 'INCREMENT':
-      return state+1;
-    case 'DECREMENT':
-      return state-1;
-    default:
-      return state;
-  }
+const addCounter = (list) =>{
+    return [...list, 0];
 }
 
-let store = createStore(counter);
-
-const Counter = ({
-                    value,
-                    onIncrement,
-                    onDecrement,
-                }) =>(
-    <div>
-        <h1>{value}</h1>
-        <button onClick={onIncrement} >+</button>
-        <button onClick={onDecrement} >+</button>
-    </div>
-);
-
-const render = () =>{
-    ReactDOM.render(
-        <Counter 
-            value={store.getState()} 
-            onIncrement = {() =>
-                store.dispatch({
-                    type: 'INCREMENT'
-                })
-            } 
-            onDecrement = {() =>
-                store.dispatch({
-                    type: 'DECREMENT'
-                })
-            } 
-       />,
-        document.getElementById('root')
-    );
+const removeCounter = (list, index) => {
+    return list
 }
 
-  
-store.subscribe(render);
-render();
+(() =>{
+    const listBefore = [];
+    const listAfter = [0];
+    
+    deepFreeze(listBefore);
+
+    expect(
+        addCounter(listBefore)
+    ).toEqual(listAfter);
+})();
+
+(() =>{
+    const listBefore = [0,10,20];
+    const listAfter = [0,20];
+    
+    deepFreeze(listBefore);
+
+    expect(
+        removeCounter(listBefore)
+    ).toEqual(listAfter);
+})();
+
+console.log('@@@@@@@@@@@@@@@Test Passed@@@@@@@@@@@@@@@@@@@@@@@@');
+
 
