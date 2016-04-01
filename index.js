@@ -2,34 +2,45 @@
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
 
-const addCounter = (list) =>{
-    return [...list, 0];
-}
-
-const removeCounter = (list, index) => {
-    return list
-}
-
-(() =>{
-    const listBefore = [];
-    const listAfter = [0];
-    
-    deepFreeze(listBefore);
-
-    expect(
-        addCounter(listBefore)
-    ).toEqual(listAfter);
-})();
+//A reducer. pure function
+const todos = (state=[], action) =>{
+   switch(action.type){
+        case 'ADD_TODO':
+            return [
+                ...state,
+                {
+                    id: action.id,
+                    text: action.text,
+                    completed: false,
+                }
+            ];
+        default:
+            return state;
+    } 
+};
 
 (() =>{
-    const listBefore = [0,10,20];
-    const listAfter = [0,20];
+    const stateBefore = [];
+    const action = {
+        type: 'ADD_TODO',
+        id: 0,
+        text: 'Finish ToDo app'
+    }
     
-    deepFreeze(listBefore);
+    const stateAfter = [
+        {
+            id: 0,
+            text: 'Finish ToDo app',
+            completed: false
+        }
+    ]
 
+    deepFreeze(stateBefore);
+    deepFreeze(action);
+    
     expect(
-        removeCounter(listBefore)
-    ).toEqual(listAfter);
+        todos(stateBefore,action)
+    ).toEqual(stateAfter);
 })();
 
 console.log('@@@@@@@@@@@@@@@Test Passed@@@@@@@@@@@@@@@@@@@@@@@@');
