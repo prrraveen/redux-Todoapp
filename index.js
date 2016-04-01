@@ -28,69 +28,70 @@ const todos = (state=[], action) =>{
     } 
 };
 
-(() =>{
-    const stateBefore = [];
-    const action = {
-        type: 'ADD_TODO',
-        id: 0,
-        text: 'Finish ToDo app'
-    }
-    
-    const stateAfter = [
-        {
-            id: 0,
-            text: 'Finish ToDo app',
-            completed: false
-        }
-    ]
+const visibilityFilter = (state = 'SHOW_ALL', action) => {
+    switch(action.type){
+        case 'SET_VISIBILITY_FILTER':
+            return action.filter;
+        default:
+            return state;
+    };
+};
 
-    deepFreeze(stateBefore);
-    deepFreeze(action);
-    
-    expect(
-        todos(stateBefore,action)
-    ).toEqual(stateAfter);
-})();
+const todoApp = (state = {},action) => {
+    return {
+        todos: todos(
+                state.todos,
+                action
+            ),
+        visibilityFilter: visibilityFilter(
+            state.visibilityFilter,
+            action
+        )
+    };
+}
 
-(() =>{
-    const stateBefore = [
-        {
-            id: 0,
-            text: 'Finish ToDo app',
-            completed: false
-        },
-        {
-            id: 1,
-            text: 'unit testing is awesome',
-            completed: false
-        }
-    ];
-    const action = {
-        type: 'TOGGLE_TODO',
-        id: 1,
-    }
-    
-    const stateAfter = [
-         {
-            id: 0,
-            text: 'Finish ToDo app',
-            completed: false
-        },
-        {
-            id: 1,
-            text: 'unit testing is awesome',
-            completed: true
-        }
-    ]
+import { createStore } from 'redux';
+const store = createStore(todoApp);
 
-    deepFreeze(stateBefore);
-    deepFreeze(action);
-    
-    expect(
-        todos(stateBefore,action)
-    ).toEqual(stateAfter);
-})();
+console.log('Initial State');
+console.log(store.getState());
+console.log('-----------');
 
-console.log('@@@@@@@@@@@@@@@Test Passed@@@@@@@@@@@@@@@@@@@@@@@@');
+console.log('Dispatching action ADD_TODO');
+store.dispatch({
+    type: 'ADD_TODO',
+    id: 0,
+    text: 'Learn Redux',
+});
+console.log('Current State')
+console.log(store.getState());
+console.log('-----------');
 
+console.log('Dispatching action ADD_TODO');
+store.dispatch({
+    type: 'ADD_TODO',
+    id: 1,
+    text: 'Go Nuts',
+});
+console.log('Current State')
+console.log(store.getState());
+console.log('-----------');
+
+console.log('Dispatching action TOGGLE_TODO');
+store.dispatch({
+    type: 'TOGGLE_TODO',
+    id: 0,
+});
+console.log('Current State')
+console.log(store.getState());
+console.log('-----------');
+
+console.log('Dispatching action SET_VISIBILITY_FILTER');
+store.dispatch({
+    type: 'SET_VISIBILITY_FILTER',
+    filter: 'COMPLETED'
+});
+console.log('Current State')
+console.log(store.getState());
+console.log('-----------');
 
