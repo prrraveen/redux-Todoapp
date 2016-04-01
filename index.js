@@ -43,68 +43,51 @@ const todoApp = combineReducers({
     visibilityFilter,
 });
 
-/*
-const todoApp = combineReducers({
-    todos : todos,
-    visibilityFilter: visibilityFilter 
-});
-
-const todoApp = (state = {},action) => {
-    return {
-        todos: todos(
-                state.todos,
-                action
-            ),
-        visibilityFilter: visibilityFilter(
-            state.visibilityFilter,
-            action
-        )
-    };
-}
-*/
-
 import { createStore } from 'redux';
 const store = createStore(todoApp);
 
-console.log('Initial State');
-console.log(store.getState());
-console.log('-----------');
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-console.log('Dispatching action ADD_TODO');
-store.dispatch({
-    type: 'ADD_TODO',
-    id: 0,
-    text: 'Learn Redux',
-});
-console.log('Current State')
-console.log(store.getState());
-console.log('-----------');
+import { Component } from 'react';
 
-console.log('Dispatching action ADD_TODO');
-store.dispatch({
-    type: 'ADD_TODO',
-    id: 1,
-    text: 'Go Nuts',
-});
-console.log('Current State')
-console.log(store.getState());
-console.log('-----------');
+let nextTodoId = 0;
 
-console.log('Dispatching action TOGGLE_TODO');
-store.dispatch({
-    type: 'TOGGLE_TODO',
-    id: 0,
-});
-console.log('Current State')
-console.log(store.getState());
-console.log('-----------');
+class TodoApp extends Component {
+    render(){
+        return (
+            <div>
+                <input ref={node => {
+                    this.input = node;
+                }} />
+                <button onClick={() =>{
+                    store.dispatch({
+                        type: 'ADD_TODO',
+                        text: this.input.value,
+                        id: nextTodoId++
+                    });
+                    this.input.value ='';
+                }}>Add Todo</button>
+               <ul>
+                    {this.props.todos.map(todo =>
+                        <li key={todo.id}>
+                            {todo.text}
+                        </li>
+                    )}
+               </ul> 
+            </div>
+        )
+    }
+}
 
-console.log('Dispatching action SET_VISIBILITY_FILTER');
-store.dispatch({
-    type: 'SET_VISIBILITY_FILTER',
-    filter: 'COMPLETED'
-});
-console.log('Current State')
-console.log(store.getState());
-console.log('-----------');
+const render = () => {
+    ReactDOM.render(
+        <TodoApp 
+            todos= { store.getState().todos }/>,
+        document.getElementById('root')
+    )
+}
+
+store.subscribe(render);
+render();
 
