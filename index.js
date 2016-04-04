@@ -53,8 +53,36 @@ import { Component } from 'react';
 
 let nextTodoId = 0;
 
+const FilterLink = ({
+    filter,
+    currentFilter,
+    children
+}) => {
+    if (filter === currentFilter){
+        return <span>{children}</span>
+    }
+
+    return (
+        <a href='#'
+            onClick={ e =>{
+                e.preventDefault();
+                store.dispatch({
+                    type: 'SET_VISIBILITY_FILTER',
+                    filter
+                });
+            }}
+        >
+        {children}
+        </a>
+);
+};  
+
 class TodoApp extends Component {
     render(){
+        const visibletodos = getVisibletodos(
+            this.props.todos,
+            this.props.visibilityFilter
+        );
         return (
             <div>
                 <input ref={node => {
@@ -69,7 +97,7 @@ class TodoApp extends Component {
                     this.input.value ='';
                 }}>Add Todo</button>
                <ul>
-                    {this.props.todos.map(todo =>
+                    {visibletodos.map(todo =>
                         <li key={todo.id}
                             onClick={()=>{
                                 store.dispatch({
@@ -85,19 +113,58 @@ class TodoApp extends Component {
                         </li>
                     )}
                </ul> 
+               <p>
+                    show
+                    {' '}
+                    <FilterLink filter='SHOW_ALL'
+                        currentFilter={visibilityFilter}
+                    >
+                    All
+                    </FilterLink>
+                    {' '}
+                    <FilterLink filter='SHOW_ACTIVE'
+                        currentFilter={visibilityFilter}
+                    >
+                    Active
+                    </FilterLink>
+                    {' '}
+                    <FilterLink filter='SHOW_COMPLETED'
+                        currentFilter={visibilityFilter}
+                    >
+                    COMPLETED
+                    </FilterLink>
+                    </p>
             </div>
         )
+    }
+}
+
+const getVisibletodos = (
+    todos,
+    filter
+) => {
+    switch(filter){
+        case 'SHOW_ALL':
+            return todos
+        case 'SHOW_ACTIVE':
+            return todos.filter(
+                t => t.completed
+            )
+        case 'SHOW_COMPLETED':
+            return todos.filter(
+                t => !t.completed
+            )
     }
 }
 
 const render = () => {
     ReactDOM.render(
         <TodoApp 
-            todos= { store.getState().todos }/>,
+            { ...store.getState() }
+        />,
         document.getElementById('root')
     )
 }
 
 store.subscribe(render);
 render();
-
